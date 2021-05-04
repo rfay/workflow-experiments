@@ -25,32 +25,68 @@ jobs:
           go-version: 1.*
 
       - name: Build DDEV executables
-        run: make windows_amd64
+        run: make darwin_amd64 darwin_arm64 windows_amd64
 
       - uses: actions/upload-artifact@v2
         with:
-          name: ddev.exe
-          path: .gotmp/bin/windows_amd64/ddev.exe
+          name: ddev-windows-binaries
+          path: .gotmp/bin/windows_amd64
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ddev-macos-amd64
+          path: .gotmp/bin/darwin_amd64
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ddev-macos-arm64
+          path: .gotmp/bin/darwin_arm64
+
 
   sign-ddev-on-windows:
     name: Sign ddev.exe on Windows
     runs-on: [ self-hosted, windows-signer ]
     needs: build
     steps:
-      - name: download ddev.exe
+      - name: remove any existing binaries
+        shell: bash
+        run: rm /c/tmp/*.exe
+      - name: download ddev-windows-binaries
         uses: actions/download-artifact@v2
         with:
-          name: ddev.exe
+          name: ddev-windows-binaries
           path: "C:/tmp"
       - name: Sign windows ddev.exe
         shell: bash
         run: |
           set -x
-          signtool sign "C:/tmp/ddev.exe"
-      - name: Upload signed ddev.exe
+          ls -l /c/tmp
+          signtool sign "C:/tmp/ddev.exe" "C:/tmp/mkcert.exe", "C:/tmp/nssm.exe" "C:/tmp/winnfsd.exe" "C:/tmp/ddev_gen_autocomplete.exe"
+      - name: Upload signed ddev-windows-binaries
         uses: actions/upload-artifact@v2
         with:
-          name: ddev.exe
-          path: "C:/tmp/ddev.exe"
+          name: ddev-windows-binaries
+          path: "C:/tmp/*.exe"
 
+  sign-ddev-on-macos:
+    name: Sign ddev on macOS
+    runs-on: macos-latest
+    needs: build
+    steps:
+      - name: remove any existing binaries
+        shell: bash
+        run: rm -r /tmp/signing
+      - name: download ddev-macos-arm64
+        uses: actions/download-artifact@v2
+        with:
+          name: ddev-macos-arm64
+          path: /tmp/signing
+      - name: Sign macOS ddev binary
+        run: |
+          set -x
+          uname -a
+          ls -l /tmp/signing
+      - name: Upload signed ddev-macos-arm64 binaries
+        uses: actions/upload-artifact@v2
+        with:
+          name: ddev-macos-arm64
+          path: /tmp/signing
 
