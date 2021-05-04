@@ -15,6 +15,14 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
+      - name: Set up linux
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -qq nsis
+          wget https://sourceforge.net/projects/nsis/files/NSIS%203/3.06.1/nsis-3.06.1.zip/download && sudo unzip -o -d /usr/share download && sudo mv /usr/share/nsis-3.06.1 /usr/share/nsis
+          wget https://github.com/GsNSIS/EnVar/releases/latest/download/EnVar-Plugin.zip && sudo unzip -o -d /usr/share/nsis EnVar-Plugin.zip
+          wget https://github.com/DigitalMediaServer/NSIS-INetC-plugin/releases/latest/download/INetC.zip && sudo unzip -o -d /usr/share/nsis/Plugins INetC.zip
+
       - uses: actions/checkout@v2
         with:
           # We need to get all branches and tags for git describe to work properly
@@ -65,6 +73,59 @@ jobs:
         with:
           name: ddev-windows-binaries
           path: "C:/tmp/*.exe"
+
+  build-windows-installer-with-signed-ddev:
+    name: Build the windows installer using the signed executables
+    runs-on: ubuntu-20.04
+    needs: sign-ddev-on-windows
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # We need to get all branches and tags for git describe to work properly
+          fetch-depth: 0
+      - uses: actions/setup-go@v2
+        with:
+          go-version: 1.*
+      - name: remove any existing binaries
+        shell: bash
+        run: rm -f .gotmp/bin/windows_amd64/*.exe
+      - name: download ddev-windows-binaries
+        uses: actions/download-artifact@v2
+        with:
+          name: ddev-windows-binaries
+          path: ".gotmp/bin/windows_amd64"
+      - name: Make installer with signed binaries
+        run: make windows_install
+      - name: Upload unsigned ddev-windows-installer
+        uses: actions/upload-artifact@v2
+        with:
+          name: ddev-windows-installer
+          path: ".gotmp/bin/windows_amd64/ddev_windows_installer*.exe"
+
+  sign-ddev-installer-on-windows:
+    name: Sign ddev_windows_installer
+    runs-on: [ self-hosted, windows-signer ]
+    needs: build-windows-installer-with-signed-ddev
+    steps:
+      - name: remove any existing binaries
+        shell: bash
+        run: rm -f /c/tmp/*.exe
+      - name: download ddev-windows-installer
+        uses: actions/download-artifact@v2
+        with:
+          name: ddev-windows-installer
+          path: "C:/tmp"
+      - name: Sign ddev_windows_installer
+        shell: bash
+        run: |
+          set -x
+          ls -l /c/tmp
+          signtool sign "C:/tmp/ddev_windows_installer*.exe"
+      - name: Upload signed ddev-windows-installer
+        uses: actions/upload-artifact@v2
+        with:
+          name: ddev-windows-installer
+          path: "C:/tmp/ddev_windows_installer*.exe"
 
   sign-ddev-on-macos:
     name: Sign ddev on macOS
