@@ -46,7 +46,7 @@ jobs:
         shell: bash
         run: |
           set -x
-          ls -lR "/tmp"
+          ls -lR "{{ $github.workspace }}"
           signtool sign "{{ $github.workspace }}/ddev.exe"
       - name: Upload signed ddev.exe
         uses: actions/upload-artifact@v2
