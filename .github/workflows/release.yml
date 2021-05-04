@@ -67,7 +67,7 @@ jobs:
         run: |
           set -x
           ls -l /c/tmp
-          signtool sign "C:/tmp/ddev.exe" "C:/tmp/mkcert.exe", "C:/tmp/nssm.exe" "C:/tmp/winnfsd.exe" "C:/tmp/ddev_gen_autocomplete.exe"
+          signtool sign "C:/tmp/ddev.exe" "C:/tmp/mkcert.exe" "C:/tmp/nssm.exe" "C:/tmp/winnfsd.exe" "C:/tmp/ddev_gen_autocomplete.exe"
       - name: Upload signed ddev-windows-binaries
         uses: actions/upload-artifact@v2
         with:
