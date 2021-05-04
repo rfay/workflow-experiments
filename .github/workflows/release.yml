@@ -29,7 +29,7 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: windows ddev.exe
+          name: ddev.exe
           path: .gotmp/bin/windows_amd64/ddev.exe
 
   sign-ddev-on-windows:
@@ -51,7 +51,7 @@ jobs:
       - name: Upload signed ddev.exe
         uses: actions/upload-artifact@v2
         with:
-          name: windows ddev.exe
+          name: ddev.exe
           path: /tmp/ddev.exe
 
 
