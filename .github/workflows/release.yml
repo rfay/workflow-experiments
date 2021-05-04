@@ -32,7 +32,7 @@ jobs:
 
   sign-ddev-on-windows:
     name: Sign ddev.exe on Windows
-    runs-on: [ self-hosted, window-signer ]
+    runs-on: [ self-hosted, windows-signer ]
     needs: build
     steps:
       - name: Sign windows ddev.exe
