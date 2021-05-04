@@ -38,7 +38,8 @@ jobs:
       - name: Sign windows ddev.exe
         shell: bash
         run: |
-          ls -lR "${{ github.workspace }}"
-          signtool sign ${{ github.workspace }}/artifacts/ddev.exe
+          set -x
+          ls -lR "$(cygpath -u ${{ github.workspace }})"
+          signtool sign "${{ github.workspace }}/artifacts/ddev.exe"
 
 
