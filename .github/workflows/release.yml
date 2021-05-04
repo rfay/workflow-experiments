@@ -2,7 +2,7 @@ name: Release
 
 on:
   push:
-    branches: [ $default-branch ]
+    branches: "main"
 
 env:
   BUILDKIT_PROGRESS: plain
