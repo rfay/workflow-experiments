@@ -36,6 +36,9 @@ jobs:
     needs: build
     steps:
       - name: Sign windows ddev.exe
-        run: signtool sign ${{ github.workspace }}/artifacts/ddev.exe
+        shell: bash
+        run: |
+          ls -lR ${{ github.workspace }}
+          signtool sign ${{ github.workspace }}/artifacts/ddev.exe
 
 
