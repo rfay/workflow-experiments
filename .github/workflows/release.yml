@@ -27,19 +27,31 @@ jobs:
       - name: Build DDEV executables
         run: make windows_amd64
 
-      - name: Generate artifacts
-        run: ./.ci-scripts/generate_artifacts.sh ${{ github.workspace }}/artifacts
+      - uses: actions/upload-artifact@v2
+        with:
+          name: windows ddev.exe
+          path: .gotmp/bin/windows_amd64/ddev.exe
 
   sign-ddev-on-windows:
     name: Sign ddev.exe on Windows
     runs-on: [ self-hosted, windows-signer ]
     needs: build
     steps:
+      - name: download ddev.exe
+        uses: actions/download-artifact@v2
+        with:
+          name: ddev.exe
+          path: /tmp/ddev.exe
       - name: Sign windows ddev.exe
         shell: bash
         run: |
           set -x
-          ls -lR "$(cygpath -u '${{ github.workspace }}')"
-          signtool sign "${{ github.workspace }}/artifacts/ddev.exe"
+          ls -lR /tmp/d*
+          signtool sign /tmp/ddev.exe
+      - name: Upload signed ddev.exe
+        uses: actions/upload-artifact@v2
+        with:
+          name: windows ddev.exe
+          path: /tmp/ddev.exe
 
 
