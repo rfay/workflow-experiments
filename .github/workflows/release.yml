@@ -41,12 +41,12 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: ddev.exe
-          path: "{{ github.workspace }}/ddev.exe"
+          path: {{ github.workspace }}/ddev.exe
       - name: Sign windows ddev.exe
         shell: bash
         run: |
           set -x
-          ls -lR "{{ github.workspace }}"
+          ls -lR $(cygpath -u "{{ github.workspace }}")
           signtool sign "{{ github.workspace }}/ddev.exe"
       - name: Upload signed ddev.exe
         uses: actions/upload-artifact@v2
