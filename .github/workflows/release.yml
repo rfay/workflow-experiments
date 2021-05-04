@@ -39,7 +39,7 @@ jobs:
         shell: bash
         run: |
           set -x
-          ls -lR "$(cygpath -u ${{ github.workspace }})"
+          ls -lR "$(cygpath -u '${{ github.workspace }}')"
           signtool sign "${{ github.workspace }}/artifacts/ddev.exe"
 
 
