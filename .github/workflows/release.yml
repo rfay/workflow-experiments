@@ -1,0 +1,61 @@
+name: Release
+
+on:
+  push:
+    branches: [ master ]
+
+env:
+  BUILDKIT_PROGRESS: plain
+  DOCKER_CLI_EXPERIMENTAL: enabled
+  DDEV_DEBUG: true
+
+jobs:
+  build:
+    name: Build DDEV executables
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # We need to get all branches and tags for git describe to work properly
+          fetch-depth: 0
+
+      - uses: actions/setup-go@v2
+        with:
+          go-version: 1.*
+      
+      - name: Build DDEV executables
+        run: go install main.go
+
+      # From here, we need to branch out to different builders
+
+      - name: Upload all artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: all-ddev-executables
+          path: ${{ github.workspace }}/artifacts/*
+      - name: Upload macos-amd64 binary
+        uses: actions/upload-artifact@v2
+        with:
+          name: ddev-macos-amd64
+          path: .gotmp/bin/darwin_amd64/ddev
+      - name: Upload macos-arm64 binary
+        uses: actions/upload-artifact@v2
+        with:
+          name: ddev-macos-arm64
+          path: .gotmp/bin/darwin_arm64/ddev
+      - name: Upload linux-arm64 binary
+        uses: actions/upload-artifact@v2
+        with:
+          name: ddev-linux-arm64
+          path: .gotmp/bin/linux_arm64/ddev
+      - name: Upload inux_amd644 binary
+        uses: actions/upload-artifact@v2
+        with:
+          name: ddev-linux-amd64
+          path: .gotmp/bin/linux_amd64/ddev
+      - name: Upload windows_amd64 installer
+        uses: actions/upload-artifact@v2
+        with:
+          name: ddev-windows-amd64-installer
+          path: .gotmp/bin/windows_amd64/ddev_windows_installer*.exe
