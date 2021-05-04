@@ -25,7 +25,7 @@ jobs:
           go-version: 1.*
 
       - name: Build DDEV executables
-        run: make darwin_amd64 darwin_arm64 windows_amd64
+        run: make darwin_amd64 darwin_arm64 windows_install
 
       - uses: actions/upload-artifact@v2
         with:
@@ -48,7 +48,7 @@ jobs:
     steps:
       - name: remove any existing binaries
         shell: bash
-        run: rm /c/tmp/*.exe
+        run: rm -f /c/tmp/*.exe
       - name: download ddev-windows-binaries
         uses: actions/download-artifact@v2
         with:
@@ -73,7 +73,7 @@ jobs:
     steps:
       - name: remove any existing binaries
         shell: bash
-        run: rm -r /tmp/signing
+        run: rm -rf /tmp/signing
       - name: download ddev-macos-arm64
         uses: actions/download-artifact@v2
         with:
