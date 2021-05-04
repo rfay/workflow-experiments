@@ -41,7 +41,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: ddev.exe
-          path: "C:/tmp/ddev.exe"
+          path: "C:/tmp"
       - name: Sign windows ddev.exe
         shell: bash
         run: |
