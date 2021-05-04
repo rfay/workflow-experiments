@@ -125,14 +125,14 @@ jobs:
       - name: Sign ddev_windows_installer
         shell: bash
         run: |
-          set -x
-          ls -l /c/tmp
-          signtool sign "C:/tmp/ddev_windows_installer*.exe"
+          signtool sign "C:/tmp/ddev_windows_installer*.exe" "C:/tmp/ddev_uninstall.exe"
       - name: Upload signed ddev-windows-installer
         uses: actions/upload-artifact@v2
         with:
           name: ddev-windows-installer
-          path: "C:/tmp/ddev_windows_installer*.exe"
+          path: |
+            "C:/tmp/ddev_windows_installer*.exe"
+            "C:/tmp/ddev_uninstall.exe"
 
   sign-ddev-on-macos:
     name: Sign ddev on macOS
