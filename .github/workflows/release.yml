@@ -128,17 +128,12 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ddev-windows-installer
-          path: |
-            "C:/tmp/ddev_windows_installer*.exe"
-            "C:/tmp/ddev_uninstall.exe"
+          path: "C:/tmp/ddev_*install*.exe"
 
   sign-ddev-on-macos:
     name: Sign and Notarize ddev on macOS
     runs-on: macos-latest
     needs: build
-    env: # Or as an environment variable
-      DDEV_MACOS_SIGNING_PASSWORD: ${{ secrets.DDEV_MACOS_SIGNING_PASSWORD }}
-      DDEV_MACOS_APP_PASSWORD: ${{ secrets.DDEV_MACOS_APP_PASSWORD }}
     steps:
       - name: "setup macOS"
         run: |
@@ -157,8 +152,13 @@ jobs:
           name: ddev-macos-amd64
           path: ".gotmp/bin/darwin_amd64"
       - name: Sign and notarize binary
+        env:
+          DDEV_MACOS_SIGNING_PASSWORD: ${{ secrets.DDEV_MACOS_SIGNING_PASSWORD }}
+          DDEV_MACOS_APP_PASSWORD: ${{ secrets.DDEV_MACOS_APP_PASSWORD }}
         run: |
           set -o errexit -o pipefail
+          if [ -z "${DDEV_MACOS_SIGNING_PASSWORD}" ] ; then echo "DDEV_MACOS_SIGNING_PASSWORD is empty"; fi
+          if [ -z "${DDEV_MACOS_APP_PASSWORD}" ] ; then echo "DDEV_MACOS_APP_PASSWORD is empty"; fi
           echo "Signing and notarizing .gotmp/bin/darwin_amd64/ddev ..."
           curl -s https://raw.githubusercontent.com/drud/signing_tools/master/macos_sign.sh | bash -s -  --signing-password="${DDEV_MACOS_SIGNING_PASSWORD}" --cert-file=certfiles/ddev_developer_id_cert.p12 --cert-name="Developer ID Application: DRUD Technology, LLC (3BAN66AG5M)" --target-binary=".gotmp/bin/darwin_amd64/ddev"
           curl -sSL -f https://raw.githubusercontent.com/drud/signing_tools/master/macos_notarize.sh | bash -s -  --app-specific-password=${DDEV_MACOS_APP_PASSWORD} --apple-id=accounts@drud.com --primary-bundle-id=com.ddev.ddev --target-binary=".gotmp/bin/darwin_amd64/ddev"
