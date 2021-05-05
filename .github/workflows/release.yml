@@ -8,8 +8,15 @@ env:
   BUILDKIT_PROGRESS: plain
   DOCKER_CLI_EXPERIMENTAL: enabled
   DDEV_DEBUG: true
+  JUNK: ${{ secrets.JUNK }}
 
 jobs:
+  checkenv:
+    name: Check env
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check environment
+        run: "echo JUNK=${JUNK}"
   build:
     name: Build DDEV executables
     runs-on: ubuntu-20.04
