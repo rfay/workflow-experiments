@@ -11,44 +11,6 @@ env:
   JUNK: ${{ secrets.JUNK }}
 
 jobs:
-  create-cache:
-    name: Create cache
-    runs-on: ubuntu-20.04
-    steps:
-      - name: create a file or two
-        run: mkdir -p junk && cd junk && touch one two three
-      - name: "see what's there in source"
-        run: ls -lR junk
-      - name: save to cache
-        id: junk
-        uses: actions/cache@v2
-        with:
-          path: junk
-          key: ${{ github.sha }}-base
-  use-cache:
-    name: Use cache
-    needs: create-cache
-    runs-on: ubuntu-20.04
-    steps:
-    - uses: actions/cache@v2
-      with:
-        path: junk
-        key: ${{ github.sha }}-base
-    - name: "see what's there in restore"
-      run: ls -lR junk
-    - name: "add more"
-      run: cd junk && touch four five
-  use-updated-cache:
-    name: Use cache
-    needs: use-cache
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/cache@v2
-        with:
-          path: junk
-          key: ${{ github.sha }}-updated
-      - name: "see what's there in restore"
-        run: ls -lR junk
   build:
     name: Build DDEV executables
     runs-on: ubuntu-20.04
@@ -74,7 +36,7 @@ jobs:
       - name: Build DDEV executables
         run: make windows_install darwin_amd64 darwin_arm64
 
-      - name: save build results
+      - name: cache build results
         uses: actions/cache@v2
         with:
           path: .gotmp/bin
@@ -89,18 +51,18 @@ jobs:
       - name: restore build results from cache
         uses: actions/cache@v2
         with:
-          path: C:/tmp/buildresults
+          path: .gotmp/bin
           key: ${{ github.sha }}-unsigned
       - name: Sign windows ddev.exe
         shell: bash
         run: |
           set -x
           ls -l /c/tmp
-          signtool sign "C:/tmp/buildresults/windows_amd64/ddev.exe" "C:/tmp/buildresults/windows_amd64/mkcert.exe" "C:/tmp/buildresults/windows_amd64/nssm.exe" "C:/tmp/buildresults/windows_amd64/winnfsd.exe" "C:/tmp/buildresults/windows_amd64/ddev_gen_autocomplete.exe"
+          signtool sign ".gotmp/bin/windows_amd64/ddev.exe" ".gotmp/bin/windows_amd64/mkcert.exe" ".gotmp/bin/windows_amd64/nssm.exe" ".gotmp/bin/windows_amd64/winnfsd.exe" ".gotmp/bin/windows_amd64/ddev_gen_autocomplete.exe"
       - name: Cache signed binaries
         uses: actions/cache@v2
         with:
-          path: C:/tmp/buildresults/windows_amd64
+          path: .gotmp/bin/windows_amd64
           key: ${{ github.sha }}-signed-windows-binaries
 
   build-windows-installer-with-signed-ddev:
