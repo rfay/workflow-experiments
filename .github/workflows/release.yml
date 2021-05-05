@@ -36,7 +36,19 @@ jobs:
         key: ${{ github.sha }}
     - name: "see what's there in restore"
       run: ls -lR junk
-
+    - name: "add more"
+      run: cd junk && touch four five
+  use-updated-cache:
+    name: Use cache
+    needs: use-cache
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/cache@v2
+        with:
+          path: junk
+          key: ${{ github.sha }}
+      - name: "see what's there in restore"
+        run: ls -lR junk
   build:
     name: Build DDEV executables
     runs-on: ubuntu-20.04
