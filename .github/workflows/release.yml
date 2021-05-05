@@ -53,6 +53,8 @@ jobs:
         with:
           path: .gotmp/bin
           key: ${{ github.sha }}-unsigned
+      - name: Output result of restore
+        run: echo ">${{ steps.unsigned-build.cache-hit }}<"
       - name: test that unsigned build was loaded
         if: steps.unsigned-build.cache-hit != 'true'
         run: exit 1
