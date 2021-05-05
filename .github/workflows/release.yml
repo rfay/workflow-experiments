@@ -130,7 +130,7 @@ jobs:
           path: "C:/tmp"
       - name: Sign ddev_windows_installer
         shell: bash
-        run: signtool sign "C:/tmp/ddev_windows_installer*.exe" "C:/tmp/ddev_uninstall.exe"
+        run: signtool sign "C:/tmp/ddev_windows_installer*.exe"
       - name: Upload signed ddev-windows-installer
         uses: actions/upload-artifact@v2
         with:
