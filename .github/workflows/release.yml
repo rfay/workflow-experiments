@@ -139,6 +139,8 @@ jobs:
     env: # Or as an environment variable
       DDEV_MACOS_SIGNING_PASSWORD: ${{ secrets.DDEV_MACOS_SIGNING_PASSWORD }}
     steps:
+      - name: "setup macOS"
+        run: brew install gnu-getopt
       - uses: actions/checkout@v2
         with:
           # We need to get all branches and tags for git describe to work properly
@@ -146,9 +148,6 @@ jobs:
       - uses: actions/setup-go@v2
         with:
           go-version: 1.*
-      - name: remove any existing binaries
-        shell: bash
-        run: rm -f /c/tmp/*.exe
       - name: download ddev-macos-amd64
         uses: actions/download-artifact@v2
         with:
@@ -156,7 +155,7 @@ jobs:
           path: ".gotmp/bin/darwin_amd64"
       - name: Sign and notarize binary
         run: |
-          set -o errexit -o pipefail; \
+          set -o errexit -o pipefail
           echo "Notarizing .gotmp/bin/darwin_amd64/ddev ..."
           curl -sSL -f https://raw.githubusercontent.com/drud/signing_tools/master/macos_notarize.sh | bash -s -  --app-specific-password=${DDEV_MACOS_APP_PASSWORD} --apple-id=accounts@drud.com --primary-bundle-id=com.ddev.ddev --target-binary=".gotmp/bin/darwin_amd64/ddev" ; \
           ls -lR .gotmp/bin/darwin_amd64
