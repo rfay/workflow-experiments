@@ -144,7 +144,7 @@ jobs:
     steps:
       - name: "setup macOS"
         run: |
-          brew install gnu-getopt jq
+          brew install coreutils gnu-getopt jq
           pip3 install yq
       - uses: actions/checkout@v2
         with:
