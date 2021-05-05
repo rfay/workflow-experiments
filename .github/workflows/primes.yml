@@ -18,10 +18,10 @@ jobs:
 
       - name: Generate Prime Numbers
         if: steps.cache-primes.outputs.cache-hit != 'true'
-        run: /generate-primes.sh -d prime-numbers
+        run: echo "2 3 5 7 11" >prime-numbers/primes.txt
 
       - name: Use Prime Numbers
-        run: /primes.sh -d prime-numbers
+        run: ls -l prime-numbers
   use:
     runs-on: ubuntu-latest
     needs: build
@@ -34,4 +34,4 @@ jobs:
           key: ${{ runner.os }}-primes
       - name: Check cached primes
         if: steps.cache-primes.outputs.cache-hit != 'true'
-        run: exit 1
+        run: ls -l prime-numbers && exit 1
