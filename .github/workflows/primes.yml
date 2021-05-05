@@ -14,7 +14,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: prime-numbers
-          key: ${{ runner.os }}-primes
+          key: primes
 
       - name: Generate Prime Numbers
         if: steps.cache-primes.outputs.cache-hit != 'true'
@@ -31,7 +31,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: prime-numbers
-          key: ${{ runner.os }}-primes
+          key: primes
       - name: Check cached primes
         if: steps.cache-primes.outputs.cache-hit != 'true'
         run: ls -l prime-numbers && exit 1
