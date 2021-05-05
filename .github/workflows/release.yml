@@ -106,7 +106,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ddev-windows-installer
-          path: ".gotmp/bin/windows_amd64/ddev_windows_installer*.exe"
+          path: ".gotmp/bin/windows_amd64/ddev*.exe"
 
   sign-ddev-installer-on-windows:
     name: Sign ddev_windows_installer
