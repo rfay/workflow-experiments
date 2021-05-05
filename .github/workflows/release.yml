@@ -17,20 +17,13 @@ jobs:
     steps:
       - name: create a file or two
         run: mkdir -p junk && cd junk && touch one two three
-      - uses: actions/cache@v2
+      - name: "see what's there in source"
+        run: ls -lR junk
+      - name: save to cache
+        uses: actions/cache@v2
         with:
           path: junk
           key: j1
-      - name: "see what's there in source"
-        run: ls -lR junk
-      - name: restore it
-        uses: actions/cache@v2
-        with:
-          path: junk2
-          restore-keys: j1
-          key: j1
-      - name: "see what's there in restore"
-        run: ls -lR junk2
       - name: create another file or two
         run: mkdir -p junk && cd junk && touch four five
       - uses: actions/cache@v2
