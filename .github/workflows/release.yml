@@ -133,14 +133,14 @@ jobs:
             "C:/tmp/ddev_uninstall.exe"
 
   sign-ddev-on-macos:
-    name: Sign ddev on macOS
+    name: Sign and Notarize ddev on macOS
     runs-on: macos-latest
     needs: build
     env: # Or as an environment variable
       DDEV_MACOS_SIGNING_PASSWORD: ${{ secrets.DDEV_MACOS_SIGNING_PASSWORD }}
     steps:
       - name: "setup macOS"
-        run: brew install gnu-getopt
+        run: brew install gnu-getopt yq
       - uses: actions/checkout@v2
         with:
           # We need to get all branches and tags for git describe to work properly
