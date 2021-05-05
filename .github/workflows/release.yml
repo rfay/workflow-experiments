@@ -53,6 +53,29 @@ jobs:
         with:
           path: .gotmp/bin
           key: ${{ github.sha }}-unsigned
+  restore-on-windows:
+    name: Restore on Windows
+    runs-on: windows-latest
+    needs: build
+    steps:
+      - name: restore build results from cache
+        uses: actions/cache@v2
+        id: unsigned-build
+        with:
+          path: .gotmp/bin
+          key: ${{ github.sha }}-unsigned
+
+  restore-on-windows-selfhosted:
+    name: Restore on Windows
+    runs-on: [ self-hosted, windows-signer ]
+    needs: build
+    steps:
+      - name: restore build results from cache
+        uses: actions/cache@v2
+        id: unsigned-build
+        with:
+          path: .gotmp/bin
+          key: ${{ github.sha }}-unsigned
 
   sign-ddev-on-windows:
     name: Sign ddev.exe on Windows
