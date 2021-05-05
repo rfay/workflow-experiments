@@ -32,8 +32,8 @@ jobs:
         with:
           go-version: 1.*
 
-      - name: Build windows DDEV executables
-        run: make windows_install
+      - name: Build DDEV executables
+        run: make windows_install darwin_amd64 darwin_arm64
 
       - uses: actions/upload-artifact@v2
         with:
@@ -47,7 +47,6 @@ jobs:
         with:
           name: ddev-macos-arm64
           path: .gotmp/bin/darwin_arm64
-
 
   sign-ddev-on-windows:
     name: Sign ddev.exe on Windows
@@ -124,8 +123,7 @@ jobs:
           path: "C:/tmp"
       - name: Sign ddev_windows_installer
         shell: bash
-        run: |
-          signtool sign "C:/tmp/ddev_windows_installer*.exe" "C:/tmp/ddev_uninstall.exe"
+        run: signtool sign "C:/tmp/ddev_windows_installer*.exe" "C:/tmp/ddev_uninstall.exe"
       - name: Upload signed ddev-windows-installer
         uses: actions/upload-artifact@v2
         with:
@@ -137,6 +135,7 @@ jobs:
   sign-ddev-on-macos:
     name: Sign ddev on macOS
     runs-on: macos-latest
+    needs: build
     env: # Or as an environment variable
       DDEV_MACOS_SIGNING_PASSWORD: ${{ secrets.DDEV_MACOS_SIGNING_PASSWORD }}
     steps:
@@ -147,21 +146,28 @@ jobs:
       - uses: actions/setup-go@v2
         with:
           go-version: 1.*
-
-      - name: Build signed macOS binary
+      - name: remove any existing binaries
+        shell: bash
+        run: rm -f /c/tmp/*.exe
+      - name: download ddev-macos-amd64
+        uses: actions/download-artifact@v2
+        with:
+          name: ddev-macos-amd64
+          path: ".gotmp/bin/darwin_amd64"
+      - name: Sign and notarize binary
         run: |
-          set -x
-          uname -a
-          make darwin_amd64_notarized darwin_amd64_notarized
-          ls -lR .gotmp/bin/darwin*
+          set -o errexit -o pipefail; \
+          echo "Notarizing .gotmp/bin/darwin_amd64/ddev ..."
+          curl -sSL -f https://raw.githubusercontent.com/drud/signing_tools/master/macos_notarize.sh | bash -s -  --app-specific-password=${DDEV_MACOS_APP_PASSWORD} --apple-id=accounts@drud.com --primary-bundle-id=com.ddev.ddev --target-binary=".gotmp/bin/darwin_amd64/ddev" ; \
+          ls -lR .gotmp/bin/darwin_amd64
       - name: Upload signed ddev-macos-amd64 binaries
         uses: actions/upload-artifact@v2
         with:
           name: ddev-macos-amd64
           path: .gotmp/bin/darwin_amd64
-      - name: Upload signed ddev-macos-arm64 binaries
-        uses: actions/upload-artifact@v2
-        with:
-          name: ddev-macos-arm64
-          path: .gotmp/bin/darwin_arm64
+#      - name: Upload signed ddev-macos-arm64 binaries
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: ddev-macos-arm64
+#          path: .gotmp/bin/darwin_arm64
 
