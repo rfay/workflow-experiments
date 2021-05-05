@@ -138,6 +138,7 @@ jobs:
     needs: build
     env: # Or as an environment variable
       DDEV_MACOS_SIGNING_PASSWORD: ${{ secrets.DDEV_MACOS_SIGNING_PASSWORD }}
+      DDEV_MACOS_APP_PASSWORD: ${{ secrets.DDEV_MACOS_APP_PASSWORD }}
     steps:
       - name: "setup macOS"
         run: |
@@ -158,8 +159,9 @@ jobs:
       - name: Sign and notarize binary
         run: |
           set -o errexit -o pipefail
-          echo "Notarizing .gotmp/bin/darwin_amd64/ddev ..."
-          curl -sSL -f https://raw.githubusercontent.com/drud/signing_tools/master/macos_notarize.sh | bash -s -  --app-specific-password=${DDEV_MACOS_APP_PASSWORD} --apple-id=accounts@drud.com --primary-bundle-id=com.ddev.ddev --target-binary=".gotmp/bin/darwin_amd64/ddev" ; \
+          echo "Signing and notarizing .gotmp/bin/darwin_amd64/ddev ..."
+          curl -s https://raw.githubusercontent.com/drud/signing_tools/master/macos_sign.sh | bash -s -  --signing-password="${DDEV_MACOS_SIGNING_PASSWORD}" --cert-file=certfiles/ddev_developer_id_cert.p12 --cert-name="Developer ID Application: DRUD Technology, LLC (3BAN66AG5M)" --target-binary=".gotmp/bin/darwin_amd64/ddev"
+          curl -sSL -f https://raw.githubusercontent.com/drud/signing_tools/master/macos_notarize.sh | bash -s -  --app-specific-password=${DDEV_MACOS_APP_PASSWORD} --apple-id=accounts@drud.com --primary-bundle-id=com.ddev.ddev --target-binary=".gotmp/bin/darwin_amd64/ddev"
           ls -lR .gotmp/bin/darwin_amd64
       - name: Upload signed ddev-macos-amd64 binaries
         uses: actions/upload-artifact@v2
