@@ -24,7 +24,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: junk
-          key: ${{ github.sha }}
+          key: ${{ github.sha }}-base
   use-cache:
     name: Use cache
     needs: create-cache
@@ -33,7 +33,7 @@ jobs:
     - uses: actions/cache@v2
       with:
         path: junk
-        key: ${{ github.sha }}
+        key: ${{ github.sha }}-base
     - name: "see what's there in restore"
       run: ls -lR junk
     - name: "add more"
@@ -46,7 +46,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: junk
-          key: ${{ github.sha }}
+          key: ${{ github.sha }}-updated
       - name: "see what's there in restore"
         run: ls -lR junk
   build:
@@ -74,43 +74,34 @@ jobs:
       - name: Build DDEV executables
         run: make windows_install darwin_amd64 darwin_arm64
 
-      - uses: actions/upload-artifact@v2
+      - name: save build results
+        uses: actions/cache@v2
         with:
-          name: ddev-windows-binaries
-          path: .gotmp/bin/windows_amd64
-      - uses: actions/upload-artifact@v2
-        with:
-          name: ddev-macos-amd64
-          path: .gotmp/bin/darwin_amd64
-      - uses: actions/upload-artifact@v2
-        with:
-          name: ddev-macos-arm64
-          path: .gotmp/bin/darwin_arm64
+          path: .gotmp/bin
+          key: ${{ github.sha }}-unsigned
+
 
   sign-ddev-on-windows:
     name: Sign ddev.exe on Windows
     runs-on: [ self-hosted, windows-signer ]
     needs: build
     steps:
-      - name: remove any existing binaries
-        shell: bash
-        run: rm -f /c/tmp/*.exe
-      - name: download ddev-windows-binaries
-        uses: actions/download-artifact@v2
+      - name: restore build results from cache
+        uses: actions/cache@v2
         with:
-          name: ddev-windows-binaries
-          path: "C:/tmp"
+          path: C:/tmp/buildresults
+          key: ${{ github.sha }}-unsigned
       - name: Sign windows ddev.exe
         shell: bash
         run: |
           set -x
           ls -l /c/tmp
-          signtool sign "C:/tmp/ddev.exe" "C:/tmp/mkcert.exe" "C:/tmp/nssm.exe" "C:/tmp/winnfsd.exe" "C:/tmp/ddev_gen_autocomplete.exe"
-      - name: Upload signed ddev-windows-binaries
-        uses: actions/upload-artifact@v2
+          signtool sign "C:/tmp/buildresults/windows_amd64/ddev.exe" "C:/tmp/buildresults/windows_amd64/mkcert.exe" "C:/tmp/buildresults/windows_amd64/nssm.exe" "C:/tmp/buildresults/windows_amd64/winnfsd.exe" "C:/tmp/buildresults/windows_amd64/ddev_gen_autocomplete.exe"
+      - name: Cache signed binaries
+        uses: actions/cache@v2
         with:
-          name: ddev-windows-binaries
-          path: "C:/tmp/*.exe"
+          path: C:/tmp/buildresults/windows_amd64
+          key: ${{ github.sha }}-signed-windows-binaries
 
   build-windows-installer-with-signed-ddev:
     name: Build the windows installer using the signed executables
@@ -121,6 +112,11 @@ jobs:
         with:
           # We need to get all branches and tags for git describe to work properly
           fetch-depth: 0
+      - name: restore signed windows stuff
+        uses: actions/cache@v2
+        with:
+          path: .gotmp/bin/windows_amd64
+          key: ${{ github.sha }}-signed-windows-binaries
       - uses: actions/setup-go@v2
         with:
           go-version: 1.*
@@ -131,43 +127,33 @@ jobs:
           wget https://sourceforge.net/projects/nsis/files/NSIS%203/3.06.1/nsis-3.06.1.zip/download && sudo unzip -o -d /usr/share download && sudo mv /usr/share/nsis-3.06.1 /usr/share/nsis
           wget https://github.com/GsNSIS/EnVar/releases/latest/download/EnVar-Plugin.zip && sudo unzip -o -d /usr/share/nsis EnVar-Plugin.zip
           wget https://github.com/DigitalMediaServer/NSIS-INetC-plugin/releases/latest/download/INetC.zip && sudo unzip -o -d /usr/share/nsis/Plugins INetC.zip
-      - name: remove any existing binaries
-        shell: bash
-        run: rm -f .gotmp/bin/windows_amd64/*.exe
-      - name: download ddev-windows-binaries
-        uses: actions/download-artifact@v2
-        with:
-          name: ddev-windows-binaries
-          path: ".gotmp/bin/windows_amd64"
       - name: Make installer with signed binaries
         run: make windows_install
-      - name: Upload unsigned ddev-windows-installer
-        uses: actions/upload-artifact@v2
+      - name: save signed windows stuff
+        uses: actions/cache@v2
         with:
-          name: ddev-windows-installer
-          path: ".gotmp/bin/windows_amd64/ddev*.exe"
+          path: .gotmp/bin/windows_amd64
+          key: ${{ github.sha }}-unsigned-windows-installer
 
   sign-ddev-installer-on-windows:
     name: Sign ddev_windows_installer
     runs-on: [ self-hosted, windows-signer ]
     needs: build-windows-installer-with-signed-ddev
     steps:
-      - name: remove any existing binaries
-        shell: bash
-        run: rm -f /c/tmp/*.exe
-      - name: download ddev-windows-installer
-        uses: actions/download-artifact@v2
+      - name: restore signed windows binaries
+        uses: actions/cache@v2
         with:
-          name: ddev-windows-installer
-          path: "C:/tmp"
+          path: C:/tmp/windows_amd64
+          key: ${{ github.sha }}-unsigned-windows-installer
       - name: Sign ddev_windows_installer
         shell: bash
-        run: signtool sign "C:/tmp/ddev_windows_installer*.exe"
-      - name: Upload signed ddev-windows-installer
-        uses: actions/upload-artifact@v2
+        run: signtool sign "C:/tmp/windows_amd64/ddev_windows_installer*.exe"
+      - name: cache signed windows installer
+        uses: actions/cache@v2
         with:
-          name: ddev-windows-installer
-          path: "C:/tmp/ddev_*install*.exe"
+          path: C:/tmp/windows_amd64
+          key: ${{ github.sha }}-signed-windows-installer
+
 
   sign-ddev-on-macos:
     name: Sign and Notarize ddev on macOS
