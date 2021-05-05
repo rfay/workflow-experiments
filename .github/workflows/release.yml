@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: create a file or two
-        run: mdir junk && cd junk && touch one two three
+        run: mkdir -p junk && cd junk && touch one two three
       - uses: actions/cache@v2
         with:
           path: junk
@@ -31,7 +31,7 @@ jobs:
       - name: "see what's there in restore"
         run: ls -lR junk2
       - name: create another file or two
-        run: mdir junk && cd junk && touch four five
+        run: mkdir -p junk && cd junk && touch four five
       - uses: actions/cache@v2
         with:
           path: junk
