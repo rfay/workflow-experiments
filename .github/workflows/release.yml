@@ -43,7 +43,7 @@ jobs:
           key: ${{ github.sha }}-unsigned
 
   restore-on-ubuntu:
-    name: Restore con Ubuntu
+    name: Restore on Ubuntu
     runs-on: ubuntu-20.04
     needs: build
     steps:
@@ -53,6 +53,9 @@ jobs:
         with:
           path: .gotmp/bin
           key: ${{ github.sha }}-unsigned
+      - name: test that unsigned build was loaded
+        if: steps.unsigned-build.cache-hit != 'true'
+        run: exit 1
 #  restore-on-windows:
 #    name: Restore on Windows
 #    runs-on: windows-latest
@@ -76,6 +79,9 @@ jobs:
         with:
           path: .gotmp/bin
           key: ${{ github.sha }}-unsigned
+      - name: test that unsigned build was loaded
+        if: steps.unsigned-build.cache-hit != 'true'
+        run: exit 1
 
   sign-ddev-on-windows:
     name: Sign ddev.exe on Windows
