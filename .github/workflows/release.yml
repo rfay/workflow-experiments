@@ -20,23 +20,23 @@ jobs:
       - name: "see what's there in source"
         run: ls -lR junk
       - name: save to cache
-        id: j1
+        id: junk
         uses: actions/cache@v2
         with:
           path: junk
-          key: j1
+          key: junk
       - name: create another file or two
         run: mkdir -p junk && cd junk && touch four five
       - uses: actions/cache@v2
         with:
           path: junk
-          key: j1
+          key: junk
       - name: restore after additional stuff
         uses: actions/cache@v2
         with:
           path: junk2
-          restore-keys: j1
-          key: j1
+          restore-keys: junk
+          key: junk
       - name: "see what's there in restore after new restore"
         run: ls -lR junk2
 
