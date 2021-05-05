@@ -24,21 +24,18 @@ jobs:
         uses: actions/cache@v2
         with:
           path: junk
-          key: junk
-      - name: create another file or two
-        run: mkdir -p junk && cd junk && touch four five
-      - uses: actions/cache@v2
-        with:
-          path: junk
-          key: junk
-      - name: restore after additional stuff
-        uses: actions/cache@v2
-        with:
-          path: junk2
-          restore-keys: junk
-          key: junk
-      - name: "see what's there in restore after new restore"
-        run: ls -lR junk2
+          key: ${{ github.sha }}
+  use-cache:
+    name: Use cache
+    needs: create-cache
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/cache@v2
+      with:
+        path: junk
+        key: ${{ github.sha }}
+    - name: "see what's there in restore"
+      run: ls -lR junk
 
   build:
     name: Build DDEV executables
