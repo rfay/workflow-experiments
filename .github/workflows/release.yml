@@ -28,6 +28,7 @@ jobs:
         with:
           path: junk2
           restore-keys: j1
+          key: j1
       - name: "see what's there in restore"
         run: ls -lR junk2
       - name: create another file or two
@@ -41,6 +42,7 @@ jobs:
         with:
           path: junk2
           restore-keys: j1
+          key: j1
       - name: "see what's there in restore after new restore"
         run: ls -lR junk2
 
