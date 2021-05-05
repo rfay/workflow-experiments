@@ -32,8 +32,8 @@ jobs:
         with:
           go-version: 1.*
 
-      - name: Build DDEV executables
-        run: make darwin_amd64 darwin_arm64 windows_install
+      - name: Build windows DDEV executables
+        run: make windows_install
 
       - uses: actions/upload-artifact@v2
         with:
@@ -138,23 +138,31 @@ jobs:
     name: Sign ddev on macOS
     runs-on: macos-latest
     needs: build
+    env: # Or as an environment variable
+      DDEV_MACOS_SIGNING_PASSWORD: ${{ secrets.DDEV_MACOS_SIGNING_PASSWORD }}
     steps:
-      - name: remove any existing binaries
-        shell: bash
-        run: rm -rf /tmp/signing
-      - name: download ddev-macos-arm64
-        uses: actions/download-artifact@v2
+      - uses: actions/checkout@v2
         with:
-          name: ddev-macos-arm64
-          path: /tmp/signing
-      - name: Sign macOS ddev binary
+          # We need to get all branches and tags for git describe to work properly
+          fetch-depth: 0
+      - uses: actions/setup-go@v2
+        with:
+          go-version: 1.*
+
+      - name: Build signed macOS binary
         run: |
           set -x
           uname -a
-          ls -l /tmp/signing
+          make darwin_amd64_notarized darwin_amd64_notarized
+          ls -lR .gotmp/bin/darwin*
+      - name: Upload signed ddev-macos-amd64 binaries
+        uses: actions/upload-artifact@v2
+        with:
+          name: ddev-macos-amd64
+          path: .gotmp/bin/darwin_amd64
       - name: Upload signed ddev-macos-arm64 binaries
         uses: actions/upload-artifact@v2
         with:
           name: ddev-macos-arm64
-          path: /tmp/signing
+          path: .gotmp/bin/darwin_arm64
 
