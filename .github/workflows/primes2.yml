@@ -9,7 +9,7 @@ defaults:
     shell: bash
 
 jobs:
-  createprimes:
+  primes:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -28,12 +28,12 @@ jobs:
       - name: View Prime Numbers
         run: ls -l prime-numbers
 
-  restore_cache:
+  restore:
     runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
-        runner: [ ubuntu-20.04, ubuntu-18.04, ubuntu-16.04, macos-latest, windows-latest, windows-2016, [ self-hosted, windows-signer ], [ self-hosted, Linux, ARM64 ], [ self-hosted, Linux, X64 ], ['self-hosted', 'macOS', 'X64'] ]
-    needs: createprimes
+        runner: [ ubuntu-20.04, ubuntu-18.04, ubuntu-16.04, macos-latest, windows-latest, windows-2016, [ self-hosted, windows-signer ], [ self-hosted, Linux, ARM64 ], [ self-hosted, Linux, X64 ], [ self-hosted, macOS, X64 ] ]
+    needs: primes
     steps:
       - uses: actions/checkout@v2
 
