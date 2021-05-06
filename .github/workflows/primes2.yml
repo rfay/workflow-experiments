@@ -1,0 +1,52 @@
+name: Caching Primes
+
+on:
+  push:
+    branches: "main"
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  createprimes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache Primes
+        id: cacheprimes
+        uses: actions/cache@v2
+        with:
+          path: ./prime-numbers
+          key: ${{ github.sha }}-primes
+
+      - name: Generate Prime Numbers
+        if: steps.cacheprimes.outputs.cache-hit != 'true'
+        run: mkdir -p prime-numbers && echo "2 3 5 7 11" >prime-numbers/primes.txt
+
+      - name: View Prime Numbers
+        run: ls -l prime-numbers
+
+  restore_cache:
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        runner: [ ubuntu-20.04, ubuntu-18.04, macos-latest, windows-latest, [ self-hosted, windows-signer ], [ self-hosted, pi ] ]
+    needs: createprimes
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Restore cached primes
+        uses: actions/cache@v2
+        id: restoreprimes
+        with:
+          path: ./prime-numbers
+          key: ${{ github.sha }}-primes
+      - name: Check primes by inspection
+        run: if [ -d prime-numbers ]; then cat prime-numbers/primes.txt; fi
+      - name: Review contents of cache-hit
+        run: echo ">${{ steps.restoreprimes.outputs.cache-hit }}<"
+      - name: Check cached primes
+        if: ${{ steps.restoreprimes.outputs.cache-hit != 'true' }}
+        run: ls -l prime-numbers && exit 1
