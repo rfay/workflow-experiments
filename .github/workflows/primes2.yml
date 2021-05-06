@@ -32,7 +32,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
-        runner: [ ubuntu-20.04, ubuntu-18.04, macos-latest, windows-latest, [ self-hosted, windows-signer ], [ self-hosted, pi ] ]
+        runner: [ ubuntu-20.04, ubuntu-18.04, ubuntu-16.04, macos-latest, windows-latest, windows-2016, [ self-hosted, windows-signer ], [ self-hosted, pi ], ['self-hosted', 'macOS', 'X64'] ]
     needs: createprimes
     steps:
       - uses: actions/checkout@v2
