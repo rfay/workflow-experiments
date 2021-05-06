@@ -36,6 +36,8 @@ jobs:
           key: ${{ github.sha }}-primes
       - name: Check primes by inspection
         run: if [ -d prime-numbers ]; then cat prime-numbers/primes.txt; fi
+      - name: Review contents of cache-hit
+        run: echo ">${{ steps.restoreprimes.outputs.cache-hit }}<"
       - name: Check cached primes
         if: ${{ steps.restoreprimes.outputs.cache-hit != 'true' }}
         run: ls -l prime-numbers && exit 1
