@@ -3,36 +3,39 @@ name: Caching Primes
 on: push
 
 jobs:
-  build:
+  createprimes:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
 
       - name: Cache Primes
-        id: cache-primes
+        id: cacheprimes
         uses: actions/cache@v2
-        with:
-          path: ${{ github.sha }}-primes
-          key: ${{ github.sha }}-primes
-
-      - name: Generate Prime Numbers
-        if: steps.cache-primes.outputs.cache-hit != 'true'
-        run: mkdir -p prime-numbers && echo "2 3 5 7 11" >prime-numbers/primes.txt
-
-      - name: Use Prime Numbers
-        run: ls -l prime-numbers
-  use:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - uses: actions/checkout@v2
-      - name: Restore cached primes
-        uses: actions/cache@v2
-        id: cache-primes
         with:
           path: prime-numbers
           key: ${{ github.sha }}-primes
+
+      - name: Generate Prime Numbers
+        if: steps.cacheprimes.outputs.cache-hit != 'true'
+        run: mkdir -p prime-numbers && echo "2 3 5 7 11" >prime-numbers/primes.txt
+
+      - name: View Prime Numbers
+        run: ls -l prime-numbers
+  use:
+    runs-on: ubuntu-latest
+    needs: createprimes
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Restore cached primes
+        uses: actions/cache@v2
+        id: restoreprimes
+        with:
+          path: prime-numbers
+          key: ${{ github.sha }}-primes
+      - name: Check primes by inspection
+        run: if [ -d prime-numbers ]; cat prime-numbers/primes.txt; fi
       - name: Check cached primes
-        if: ${{ steps.cache-primes.outputs.cache-hit != 'true' }}
+        if: ${{ steps.restoreprimes.outputs.cache-hit != 'true' }}
         run: ls -l prime-numbers && exit 1
