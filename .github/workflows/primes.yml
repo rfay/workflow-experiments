@@ -14,7 +14,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ github.sha }}-primes
-          key: primes
+          key: ${{ github.sha }}-primes
 
       - name: Generate Prime Numbers
         if: steps.cache-primes.outputs.cache-hit != 'true'
