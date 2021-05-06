@@ -34,6 +34,7 @@ jobs:
   restore:
     runs-on: ${{ matrix.runner }}
     strategy:
+      fail-fast: false
       matrix:
         runner: [ ubuntu-20.04, ubuntu-18.04, ubuntu-16.04, macos-latest, windows-latest, windows-2016, [ self-hosted, Windows, X64 ], [ self-hosted, Linux, ARM64 ], [ self-hosted, Linux, X64 ], [ self-hosted, macOS, X64 ] ]
     needs: primes
