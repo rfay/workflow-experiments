@@ -35,13 +35,15 @@ jobs:
           path: prime-numbers
           key: ${{ github.sha }}-primes
       - name: Check primes by inspection
+        shell: bash
         run: if [ -d prime-numbers ]; then cat prime-numbers/primes.txt; fi
       - name: Review contents of cache-hit
+        shell: bash
         run: echo ">${{ steps.restoreprimes.outputs.cache-hit }}<"
       - name: Check cached primes
+        shell: bash
         if: ${{ steps.restoreprimes.outputs.cache-hit != 'true' }}
         run: ls -l prime-numbers && exit 1
-
   use_on_windows_latest:
     runs-on: windows-latest
     needs: createprimes
@@ -55,10 +57,13 @@ jobs:
           path: prime-numbers
           key: ${{ github.sha }}-primes
       - name: Check primes by inspection
+        shell: bash
         run: if [ -d prime-numbers ]; then cat prime-numbers/primes.txt; fi
       - name: Review contents of cache-hit
+        shell: bash
         run: echo ">${{ steps.restoreprimes.outputs.cache-hit }}<"
       - name: Check cached primes
+        shell: bash
         if: ${{ steps.restoreprimes.outputs.cache-hit != 'true' }}
         run: ls -l prime-numbers && exit 1
 
@@ -75,10 +80,13 @@ jobs:
           path: prime-numbers
           key: ${{ github.sha }}-primes
       - name: Check primes by inspection
+        shell: bash
         run: if [ -d prime-numbers ]; then cat prime-numbers/primes.txt; fi
       - name: Review contents of cache-hit
+        shell: bash
         run: echo ">${{ steps.restoreprimes.outputs.cache-hit }}<"
       - name: Check cached primes
+        shell: bash
         if: ${{ steps.restoreprimes.outputs.cache-hit != 'true' }}
         run: ls -l prime-numbers && exit 1
   use_on_pi_selfhosted:
@@ -94,9 +102,12 @@ jobs:
           path: prime-numbers
           key: ${{ github.sha }}-primes
       - name: Check primes by inspection
+        shell: bash
         run: if [ -d prime-numbers ]; then cat prime-numbers/primes.txt; fi
       - name: Review contents of cache-hit
+        shell: bash
         run: echo ">${{ steps.restoreprimes.outputs.cache-hit }}<"
       - name: Check cached primes
+        shell: bash
         if: ${{ steps.restoreprimes.outputs.cache-hit != 'true' }}
         run: ls -l prime-numbers && exit 1
