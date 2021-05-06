@@ -40,6 +40,8 @@ jobs:
     needs: primes
     steps:
       - uses: actions/checkout@v2
+      - name: "Use GNU tar instead BSD tar on Windows"
+        run: echo "/c/Program Files/git/usr/bin" >>"$GITHUB_PATH"
       - name: Restore cached primes
         uses: actions/cache@v2
         id: restoreprimes
