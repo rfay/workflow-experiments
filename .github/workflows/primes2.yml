@@ -2,7 +2,7 @@ name: Caching Primes
 
 on:
   push:
-    branches: "main"
+    branches: "nothing"
 
 defaults:
   run:
