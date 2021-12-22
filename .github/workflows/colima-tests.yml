@@ -40,10 +40,6 @@ jobs:
             echo "GOTEST_SHORT=true" >> $GITHUB_ENV
           fi
 
-      - name: Install Docker and deps (Linux)
-        if: matrix.os == 'ubuntu-20.04'
-        run: ./.github/workflows/linux-setup.sh
-
       - name: Cache homebrew
         uses: actions/cache@v2
         env:
@@ -54,6 +50,20 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}--
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
+
+      - name: Cache lima
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-lima
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.lima
+          key: ${{ runner.os }}-build-${{ env.cache-name }}--
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
 
       - name: Install Colima and deps (macOS)
         if: matrix.os == 'macos-11'
