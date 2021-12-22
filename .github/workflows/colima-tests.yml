@@ -41,8 +41,12 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: GOTEST_SHORT setup - use "true" except for testfullsitesetup
+        run: |
+          if [ "${{ matrix.tests }}" != "testfullsitesetup" ]; then
+            echo "GOTEST_SHORT=true" >> $GITHUB_ENV
+          fi
       - uses: actions/setup-go@v2
-        if: matrix.os == 'ubuntu-20.04'
+        name: Install golang
         with:
           go-version: 1.*
 
