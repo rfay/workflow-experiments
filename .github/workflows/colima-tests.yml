@@ -44,6 +44,17 @@ jobs:
         if: matrix.os == 'ubuntu-20.04'
         run: ./.github/workflows/linux-setup.sh
 
+      - name: Cache homebrew
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-homebrew
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: /usr/local
+          key: ${{ runner.os }}-build-${{ env.cache-name }}--
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+
       - name: Install Colima and deps (macOS)
         if: matrix.os == 'macos-11'
         run: ./.github/workflows/macos-colima-setup.sh

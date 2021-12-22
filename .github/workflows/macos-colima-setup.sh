@@ -2,8 +2,6 @@
 
 set -eu -o pipefail
 
-brew install colima docker make mkcert mysql
-
-mkcert -install
-
-set +eu
+brew install colima docker make mkcert mysql-client
+colima start
+sudo mkcert -install
