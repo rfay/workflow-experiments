@@ -2,7 +2,7 @@
 
 set -eu -o pipefail
 
-brew unlink golang || true
+brew unlink go@1.15 go || true
 brew install docker golang mkcert mysql-client
 brew install colima --HEAD
 brew link --overwrite mysql-client golang
