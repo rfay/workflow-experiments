@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       debug_enabled:
-        description: 'Run the build with tmate debugging enabled'
+        description: 'Run the build with tmate set "debug_enabled"'
         required: false
         default: false
 
@@ -28,7 +28,7 @@ jobs:
         webserver: [nginx-fpm]
         tests: [test]
         os: [ macos-11 ]
-        no-bind-mounts: ['true', 'false']
+        no-bind-mounts: ['true']
       fail-fast: false
 
     runs-on: ${{ matrix.os }}
@@ -46,8 +46,10 @@ jobs:
         env:
           cache-name: cache-homebrew
         with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: /usr/local
+          path: |
+            /usr/local/Cellar
+            /usr/local/Homebrew
+            /usr/local/bin
           key: ${{ runner.os }}-build-${{ env.cache-name }}--
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
@@ -65,6 +67,8 @@ jobs:
 
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
+        with:
+          limit-access-to-actor: true
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled }}
 
       - name: Install Colima and deps (macOS)
