@@ -45,10 +45,6 @@ jobs:
           if [ "${{ matrix.tests }}" != "testfullsitesetup" ]; then
             echo "GOTEST_SHORT=true" >> $GITHUB_ENV
           fi
-      - uses: actions/setup-go@v2
-        name: Install golang
-        with:
-          go-version: 1.*
 
       - name: Cache homebrew
         uses: actions/cache@v2
