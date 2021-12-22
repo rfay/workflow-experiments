@@ -47,11 +47,14 @@ jobs:
           cache-name: cache-homebrew-v1
         with:
           path: |
-            /usr/local/*
+            /usr/local/Cellar
+            /usr/local/bin
+            /usr/local/etc
+            /usr/local/lib
+            /usr/local/opt
           key: ${{ runner.os }}-build-${{ env.cache-name }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Cache lima
         uses: actions/cache@v2
@@ -63,7 +66,6 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
