@@ -3,6 +3,12 @@ on:
   pull_request:
   push:
     branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        description: 'Run the build with tmate debugging enabled'
+        required: false
+        default: false
 
 defaults:
   run:
@@ -22,7 +28,7 @@ jobs:
         webserver: [nginx-fpm]
         tests: [test]
         os: [ macos-11 ]
-        no-bind-mounts: ['true']
+        no-bind-mounts: ['true', 'false']
       fail-fast: false
 
     runs-on: ${{ matrix.os }}
@@ -51,6 +57,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
+      - uses: actions/setup-go@v2
+        with:
+          go-version: 1.*
+
       - name: Cache lima
         uses: actions/cache@v2
         env:
@@ -64,14 +74,11 @@ jobs:
 
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled }}
 
       - name: Install Colima and deps (macOS)
         if: matrix.os == 'macos-11'
         run: ./.github/workflows/macos-colima-setup.sh
-
-      - uses: actions/setup-go@v2
-        with:
-          go-version: 1.*
 
       - name: DDEV tests
         run: |
