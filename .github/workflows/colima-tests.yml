@@ -41,7 +41,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Cache homebrew
+      - name: Homebrew cache/restore
         uses: actions/cache@v2
         env:
           cache-name: cache-homebrew-v2
@@ -57,7 +57,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}
 
-      - name: Cache lima
+      - name: Lima cache/restore
         uses: actions/cache@v2
         env:
           cache-name: cache-lima
@@ -83,7 +83,7 @@ jobs:
         run: time make
       - name: Basic ddev usage
         run: | 
-          ln -sf $PWD/.gotmp/bin/darwin_amd64/ddev /usr/local/bin/ddev
+          sudo ln -sf $PWD/.gotmp/bin/darwin_amd64/ddev /usr/local/bin/ddev
           mkdir -p ~/workspace/d9 && cd ~/workspace/d9
           ddev config --composer-version=2.1.14 --project-type=drupal9 --docroot=web --create-docroot
           ddev start
