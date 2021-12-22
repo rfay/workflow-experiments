@@ -44,7 +44,7 @@ jobs:
       - name: Cache homebrew
         uses: actions/cache@v2
         env:
-          cache-name: cache-homebrew-v1
+          cache-name: cache-homebrew-v2
         with:
           path: |
             /usr/local/Cellar
@@ -52,6 +52,7 @@ jobs:
             /usr/local/etc
             /usr/local/lib
             /usr/local/opt
+            /usr/local/share
           key: ${{ runner.os }}-build-${{ env.cache-name }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}
