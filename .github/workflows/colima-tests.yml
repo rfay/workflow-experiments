@@ -80,10 +80,10 @@ jobs:
         if: matrix.os == 'macos-11'
         run: ./.github/workflows/macos-colima-setup.sh
 
-      - name: DDEV tests
-        run: |
-          echo "$(docker --version)"
-          make ${{ matrix.tests }}
+#      - name: DDEV tests
+#        run: |
+#          echo "$(docker --version)"
+#          make ${{ matrix.tests }}
 
       - name: Store test results
         uses: actions/upload-artifact@v2
