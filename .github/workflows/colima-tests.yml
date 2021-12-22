@@ -79,6 +79,18 @@ jobs:
         if: matrix.os == 'macos-11'
         run: ./.github/workflows/macos-colima-setup.sh
 
+      - name: Build ddev
+        run: time make
+      - name: Basic ddev usage
+        run: | 
+          ln -sf $PWD/.gotmp/bin/darwin_amd64/ddev /usr/local/bin/ddev
+          mkdir -p ~/workspace/d9 && cd ~/workspace/d9
+          ddev config --composer-version=2.1.14 --project-type=drupal9 --docroot=web --create-docroot
+          ddev start
+          ddev composer create drupal/recommended-project
+          ddev composer require drush/drush
+          ddev drush si -y demo_umami --account-pass=admin
+          curl -I http://d9.ddev.site
 #      - name: DDEV tests
 #        run: |
 #          echo "$(docker --version)"
