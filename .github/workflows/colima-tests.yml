@@ -1,4 +1,4 @@
-name: Tests
+name: Colima tests
 on:
   pull_request:
   push:
@@ -58,6 +58,7 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Cache lima
         uses: actions/cache@v2
@@ -69,11 +70,13 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
         with:
           limit-access-to-actor: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled }}
 
       - name: Install Colima and deps (macOS)
