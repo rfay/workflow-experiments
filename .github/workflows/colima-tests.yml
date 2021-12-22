@@ -80,10 +80,14 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled }}
 
       - name: Build ddev
-        run: time make
+        run: | 
+          time make
+          ls -l $PWD/.gotmp/bin/darwin_amd64
       - name: Basic ddev usage
         run: | 
           sudo ln -sf $PWD/.gotmp/bin/darwin_amd64/ddev /usr/local/bin/ddev
+          ls -l /usr/local/bin/ddev
+          sudo chmod +x /usr/local/bin/ddev
           mkdir -p ~/workspace/d9 && cd ~/workspace/d9
           ddev config --composer-version=2.1.14 --project-type=drupal9 --docroot=web --create-docroot
           ddev start
