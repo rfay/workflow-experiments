@@ -50,6 +50,11 @@ jobs:
             /usr/local/Cellar
             /usr/local/Homebrew
             /usr/local/bin
+            /usr/local/etc
+            /usr/local/lib
+            /usr/local/libexec
+            /usr/local/sbin
+            /usr/local/share
           key: ${{ runner.os }}-build-${{ env.cache-name }}--
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
