@@ -4,7 +4,7 @@ set -eu -o pipefail
 
 # colima has golang as dependency, so is going to install go anyway.
 # So we have to get rid of it somehow.
-brew uninstall go@1.15
+brew uninstall go@1.15 || true
 brew install docker mkcert mysql-client
 brew install colima --HEAD
 brew link --force mysql-client
