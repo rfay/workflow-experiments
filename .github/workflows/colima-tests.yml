@@ -95,7 +95,8 @@ jobs:
 #        run: |
 #          echo "$(docker --version)"
 #          make ${{ matrix.tests }}
-
+      - name: Run tests
+        run: make test
       - name: Store test results
         uses: actions/upload-artifact@v2
         with:
