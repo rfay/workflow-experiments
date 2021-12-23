@@ -85,6 +85,7 @@ jobs:
           ls -l $PWD/.gotmp/bin/darwin_amd64
       - name: Basic ddev usage
         run: | 
+          ls -ld /usr/local/bin
           sudo ln -sf $PWD/.gotmp/bin/darwin_amd64/ddev /usr/local/bin/ddev
           ls -l /usr/local/bin/ddev
           sudo chmod +x /usr/local/bin/ddev
