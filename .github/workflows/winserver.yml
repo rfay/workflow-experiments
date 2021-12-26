@@ -27,7 +27,7 @@ jobs:
       matrix:
         webserver: [nginx-fpm]
         tests: [test]
-        os: [ macos-11 ]
+        os: [ windows-2022 ]
         no-bind-mounts: ['true']
       fail-fast: false
 
