@@ -12,7 +12,8 @@ on:
 
 defaults:
   run:
-    shell: bash
+    shell: wsl-bash_Ubuntu-20.04 {0}
+
 
 env:
   DDEV_DEBUG: true
@@ -21,7 +22,8 @@ jobs:
   tests:
     defaults:
       run:
-        shell: bash
+        shell: wsl-bash_Ubuntu-20.04 {0}
+
 
     strategy:
       matrix:
@@ -43,6 +45,7 @@ jobs:
       - uses: actions/setup-go@v2
         with:
           go-version: 1.*
+      - uses: Vampire/setup-wsl@v1
 
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
