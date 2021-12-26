@@ -40,13 +40,16 @@ jobs:
       GOTEST_SHORT: "true"
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: 1.*
 
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
         with:
           limit-access-to-actor: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
-        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled }}
+#        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled }}
 
 
       - name: Run tests
